@@ -7,7 +7,8 @@ var baseUrl = 'http://localhost:9000/api/leaderboard';
 class Leaderboard extends React.Component {
   constructor(props) {
     super(props);
-    // this.handleCreate = this.handleCreate.bind(this);
+    this.handleRefresh = this.handleRefresh.bind(this);
+    this.handleCreate = this.handleCreate.bind(this);
     this.handleRead = this.handleRead.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
@@ -17,11 +18,28 @@ class Leaderboard extends React.Component {
     }
   }
 
-  componentDidMount(){
-    this.handleRead();
+  componentDidMount() { this.handleRead() }
+
+  handleRefresh() { this.handleRead() }
+
+  handleCreate(entry) {
+    var data = {
+      name: entry.name,
+      score: entry.score,
+      date: new Date().toISOString().slice(0, 10)
+    }
+
+    fetch(baseUrl, {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(() => this.handleRead())
+      .catch(error => console.log(error))
   }
 
-  handleRead(){
+  handleRead() {
     fetch(baseUrl)
       .then(response => response.json())
       .then(entries => {
@@ -35,6 +53,7 @@ class Leaderboard extends React.Component {
               date={entry.date.slice(0, 10)}
               onUpdate={this.handleUpdate}
               onDelete={this.handleDelete}
+              onRefresh={this.handleRefresh}
             />
           )
         })
@@ -44,7 +63,7 @@ class Leaderboard extends React.Component {
       })
       .catch(error => console.log(error))
   }
- 
+
   handleUpdate(entry) {
     var url = baseUrl.concat(
       `/${entry.id}`,
@@ -53,19 +72,19 @@ class Leaderboard extends React.Component {
     )
     fetch(url, {
       method: "PATCH",
-      headers: {'Content-Type': 'application/json'}
+      headers: { 'Content-Type': 'application/json' }
     })
       .then(response => response.json())
       .then(response => this.handleRead())
       .catch(error => console.log(error))
-    
+
   }
 
   handleDelete(id) {
     var url = baseUrl.concat(`/${id}`);
     fetch(url, {
       method: "DELETE",
-      headers: {'Content-Type': 'application/json'}
+      headers: { 'Content-Type': 'application/json' }
     })
       .then(response => response.json())
       .then(response => this.handleRead())
@@ -75,7 +94,10 @@ class Leaderboard extends React.Component {
   render() {
     return (
       <div name="wrapper">
-        <CreationForm onCreate={this.handleCreate}/>
+        <CreationForm 
+          onCreate={this.handleCreate} 
+          onRefresh={this.handleRefresh}
+        />
         <table>
           <thead>
             <tr>
@@ -85,7 +107,7 @@ class Leaderboard extends React.Component {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>{ this.state.entries }</tbody>
+          <tbody>{this.state.entries}</tbody>
         </table>
         {this.state.errors}
       </div>
