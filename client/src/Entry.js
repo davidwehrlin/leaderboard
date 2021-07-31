@@ -33,7 +33,7 @@ class Entry extends React.Component {
   }
 
   signalDelete(event){
-    return this.state.id;
+    this.props.onDelete(this.state.id);
   }
 
   render() {

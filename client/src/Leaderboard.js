@@ -8,7 +8,7 @@ class Leaderboard extends React.Component {
   constructor(props) {
     super(props);
     // this.handleCreate = this.handleCreate.bind(this);
-    // this.handleRead = this.handleRead.bind(this);
+    this.handleRead = this.handleRead.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.state = {
@@ -16,9 +16,36 @@ class Leaderboard extends React.Component {
       errors: []
     }
   }
+
+  componentDidMount(){
+    this.handleRead();
+  }
+
+  handleRead(){
+    fetch(baseUrl)
+      .then(response => response.json())
+      .then(entries => {
+        let readEntries = entries.map(entry => {
+          return (
+            <Entry
+              key={entry._id}
+              id={entry._id}
+              name={entry.name}
+              score={entry.score}
+              date={entry.date.slice(0, 10)}
+              onUpdate={this.handleUpdate}
+              onDelete={this.handleDelete}
+            />
+          )
+        })
+        this.setState({
+          entries: readEntries
+        })
+      })
+      .catch(error => console.log(error))
+  }
  
   handleUpdate(entry) {
-    console.log(entry)
     var url = baseUrl.concat(
       `/${entry.id}`,
       `?name=${entry.name}`,
@@ -29,28 +56,26 @@ class Leaderboard extends React.Component {
       headers: {'Content-Type': 'application/json'}
     })
       .then(response => response.json())
-      .then(response => response)
+      .then(response => this.handleRead())
       .catch(error => console.log(error))
+    
   }
 
   handleDelete(id) {
-    var url = baseUrl.concat(
-      `/${id}`
-    )
+    var url = baseUrl.concat(`/${id}`);
     fetch(url, {
       method: "DELETE",
       headers: {'Content-Type': 'application/json'}
     })
       .then(response => response.json())
-      .then(response => response)
+      .then(response => this.handleRead())
       .catch(error => console.log(error))
-    //TODO: Delete entry in this.state.entries
   }
 
   render() {
     return (
       <div name="wrapper">
-        <CreationForm />
+        <CreationForm onCreate={this.handleCreate}/>
         <table>
           <thead>
             <tr>
@@ -60,16 +85,7 @@ class Leaderboard extends React.Component {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <Entry 
-              id="1"
-              name="David"
-              score="100"
-              date="2021-01-01"
-              onUpdate={this.handleUpdate}
-              onDelete={this.handleDelete}
-              />
-          </tbody>
+          <tbody>{ this.state.entries }</tbody>
         </table>
         {this.state.errors}
       </div>
