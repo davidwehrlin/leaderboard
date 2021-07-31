@@ -10,7 +10,7 @@ class Leaderboard extends React.Component {
     // this.handleCreate = this.handleCreate.bind(this);
     // this.handleRead = this.handleRead.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
-    // this.handleDelete = this.handleDelete.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
     this.state = {
       entries: [],
       errors: []
@@ -33,6 +33,20 @@ class Leaderboard extends React.Component {
       .catch(error => console.log(error))
   }
 
+  handleDelete(id) {
+    var url = baseUrl.concat(
+      `/${id}`
+    )
+    fetch(url, {
+      method: "DELETE",
+      headers: {'Content-Type': 'application/json'}
+    })
+      .then(response => response.json())
+      .then(response => response)
+      .catch(error => console.log(error))
+    //TODO: Delete entry in this.state.entries
+  }
+
   render() {
     return (
       <div name="wrapper">
@@ -53,6 +67,7 @@ class Leaderboard extends React.Component {
               score="100"
               date="2021-01-01"
               onUpdate={this.handleUpdate}
+              onDelete={this.handleDelete}
               />
           </tbody>
         </table>

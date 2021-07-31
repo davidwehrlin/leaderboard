@@ -5,6 +5,7 @@ class Entry extends React.Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.handleToggle = this.handleToggle.bind(this);
+    this.signalDelete = this.signalDelete.bind(this);
     this.state = {
       isEditing: false,
       id: this.props.id,
@@ -21,10 +22,6 @@ class Entry extends React.Component {
   }
 
   handleToggle(event) {
-    let updateObj = {
-      [event.target.name]: event.target.value
-    }
-    
     this.setState({
       isEditing: !this.state.isEditing,
       [event.target.name]: event.target.value
@@ -33,6 +30,10 @@ class Entry extends React.Component {
     if (this.state.isEditing) {
       this.props.onUpdate(this.state);
     }
+  }
+
+  signalDelete(event){
+    return this.state.id;
   }
 
   render() {
@@ -58,7 +59,9 @@ class Entry extends React.Component {
             <button onClick={this.handleToggle}>
               Confirm
             </button>
-            <button >Delete</button>
+            <button onClick={this.signalDelete}>
+              Delete
+            </button>
           </td>
         </tr>
       )
@@ -72,7 +75,9 @@ class Entry extends React.Component {
             <button onClick={this.handleToggle}>
               Edit
             </button>
-            <button>Delete</button>
+            <button onClick={this.signalDelete}>
+              Delete
+            </button>
           </td>
         </tr>
       )
