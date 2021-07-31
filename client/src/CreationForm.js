@@ -13,14 +13,17 @@ class CreationForm extends React.Component {
   }
 
   render(){
-    <form >
-      {/*
-      Name Input
-      Score Input
-      Submit Button
-      Info
+    return(
+      <form >
+        {/*
+        Name Input
+        Score Input
+        Submit Button
+        Info
         */}
-    </form>
+        Hello
+      </form>
+    )
   }
 }
 
