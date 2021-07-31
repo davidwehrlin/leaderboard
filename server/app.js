@@ -9,6 +9,7 @@ require('dotenv').config()
 var mongoose = require('mongoose');
 const express = require('express')
 const mainRouter = require('./routes/main-router')
+var cors = require("cors");
 
 // Connecting to the MongoDB server
 var uri = process.env.DB_URI
@@ -22,14 +23,10 @@ db.once('open', function() {
 // Begin building express app
 const app = express()
 app.use(express.json())
+app.use(cors());
 
 // Add main api router
 app.use('/api/leaderboard', mainRouter)
-
-// Create swagger document
-const swaggerUi  = require('swagger-ui-express');
-let options = require('./swagger.json')
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(options));
 
 // Begin listening on specified port
 const port = process.env.PORT

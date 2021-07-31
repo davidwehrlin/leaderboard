@@ -21,10 +21,18 @@ class Entry extends React.Component {
   }
 
   handleToggle(event) {
+    let updateObj = {
+      [event.target.name]: event.target.value
+    }
+    
     this.setState({
-      [event.target.name]: event.target.value,
-      isEditing: !this.state.isEditing
+      isEditing: !this.state.isEditing,
+      [event.target.name]: event.target.value
     })
+
+    if (this.state.isEditing) {
+      this.props.onUpdate(this.state);
+    }
   }
 
   render() {
@@ -38,13 +46,7 @@ class Entry extends React.Component {
               value={this.state.name}
               onChange={this.handleChange} />
           </td>
-          <td>
-            <input
-              type="number"
-              name="score"
-              value={this.state.score}
-              onChange={this.handleChange} />
-          </td>
+          <td>{this.state.score}</td>
           <td>
             <input
               type="date"
@@ -54,7 +56,7 @@ class Entry extends React.Component {
           </td>
           <td>
             <button onClick={this.handleToggle}>
-              Submit
+              Confirm
             </button>
             <button >Delete</button>
           </td>
