@@ -1,11 +1,13 @@
 import React, { useDebugValue } from 'react';
+import './style.css';
 
 class Entry extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.handleToggle = this.handleToggle.bind(this);
+    this.signalUpdate = this.signalUpdate.bind(this);
     this.signalDelete = this.signalDelete.bind(this);
+    this.signalRefresh = this.signalRefresh.bind(this);
     this.state = {
       isEditing: false,
       id: this.props.id,
@@ -16,24 +18,34 @@ class Entry extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    })
+    var name = event.target.name;
+    var value = event.target.value;
+    var isAlphaNum = value.match("^[a-zA-Z0-9 ]*$") != null;
+    if (isAlphaNum || name != "name") this.setState({ [name]: value })
   }
 
-  handleToggle(event) {
+  signalUpdate() {
+    //Toggle Edit state
     this.setState({
-      isEditing: !this.state.isEditing,
-      [event.target.name]: event.target.value
+      isEditing: !this.state.isEditing
     })
+
+
 
     if (this.state.isEditing) {
       this.props.onUpdate(this.state);
     }
+
+
   }
 
-  signalDelete(event){
+  signalDelete(event) {
     this.props.onDelete(this.state.id);
+  }
+
+  signalRefresh(event) {
+    this.props.onRefresh();
+    this.setState({ isEditing: false})
   }
 
   render() {
@@ -53,14 +65,15 @@ class Entry extends React.Component {
               type="date"
               name="date"
               value={this.state.date}
+              pattern="[A-Za-z0-9]"
               onChange={this.handleChange} />
           </td>
           <td>
-            <button onClick={this.handleToggle}>
+            <button onClick={this.signalUpdate}>
               Confirm
             </button>
-            <button onClick={this.signalDelete}>
-              Delete
+            <button onClick={this.signalRefresh}>
+              Cancel
             </button>
           </td>
         </tr>
@@ -72,10 +85,10 @@ class Entry extends React.Component {
           <td>{this.state.score}</td>
           <td>{this.state.date}</td>
           <td>
-            <button onClick={this.handleToggle}>
+            <button className="update" onClick={this.signalUpdate}>
               Edit
             </button>
-            <button onClick={this.signalDelete}>
+            <button className="delete" onClick={this.signalDelete}>
               Delete
             </button>
           </td>

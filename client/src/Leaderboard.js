@@ -1,6 +1,7 @@
 import React from 'react';
 import Entry from './Entry'
 import CreationForm from './CreationForm';
+import './style.css';
 
 var baseUrl = 'http://localhost:9000/api/leaderboard';
 
@@ -8,19 +9,35 @@ class Leaderboard extends React.Component {
   constructor(props) {
     super(props);
     this.handleRefresh = this.handleRefresh.bind(this);
+    this.handleError = this.handleError.bind(this);
     this.handleCreate = this.handleCreate.bind(this);
     this.handleRead = this.handleRead.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.state = {
       entries: [],
-      errors: []
-    }
+      errors: ''
+    };
   }
 
   componentDidMount() { this.handleRead() }
 
-  handleRefresh() { this.handleRead() }
+  handleRefresh() { 
+    this.setState({ entries: []}); 
+    this.handleRead(); 
+  }
+
+  handleError(error, operation) {
+    this.setState({ error: operation.concat(": ", error) });
+    this.handleRefresh();
+  }
+
+  handleResponse(response){
+    if (!response.ok) {
+      throw Error(response.statusText);
+    }
+    return response.json();
+  }
 
   handleCreate(entry) {
     var data = {
@@ -34,14 +51,16 @@ class Leaderboard extends React.Component {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
-      .then(response => response.json())
+      .then(response => this.handleResponse(response))
       .then(() => this.handleRead())
-      .catch(error => console.log(error))
+      .catch(error => this.handleError(error, "CREATE"))
+
+    if (this.state.errors.length > 0) this.handleRefresh();
   }
 
   handleRead() {
     fetch(baseUrl)
-      .then(response => response.json())
+      .then(response => this.handleResponse(response))
       .then(entries => {
         let readEntries = entries.map(entry => {
           return (
@@ -61,23 +80,24 @@ class Leaderboard extends React.Component {
           entries: readEntries
         })
       })
-      .catch(error => console.log(error))
+      .catch(error => this.handleError(error, "READ"))
   }
 
   handleUpdate(entry) {
+    
     var url = baseUrl.concat(
       `/${entry.id}`,
       `?name=${entry.name}`,
       `&date=${entry.date}`
     )
+    console.log(url);
     fetch(url, {
       method: "PATCH",
       headers: { 'Content-Type': 'application/json' }
     })
-      .then(response => response.json())
+      .then(response => this.handleResponse(response))
       .then(response => this.handleRead())
-      .catch(error => console.log(error))
-
+      .catch(error => this.handleError(error, "UPDATE"))
   }
 
   handleDelete(id) {
@@ -86,9 +106,9 @@ class Leaderboard extends React.Component {
       method: "DELETE",
       headers: { 'Content-Type': 'application/json' }
     })
-      .then(response => response.json())
+      .then(response => this.handleResponse(response))
       .then(response => this.handleRead())
-      .catch(error => console.log(error))
+      .catch(error => this.handleError(error, "DELETE"))
   }
 
   render() {
@@ -99,7 +119,7 @@ class Leaderboard extends React.Component {
           onRefresh={this.handleRefresh}
         />
         <table>
-          <thead>
+          <thead className="read">
             <tr>
               <th>Name</th>
               <th>Score</th>
@@ -109,7 +129,11 @@ class Leaderboard extends React.Component {
           </thead>
           <tbody>{this.state.entries}</tbody>
         </table>
-        {this.state.errors}
+        <button className="create-button" onClick={this.handleRefresh}>
+          Refresh
+        </button>
+        <p>{this.state.error}</p>
+        
       </div>
     )
   }
