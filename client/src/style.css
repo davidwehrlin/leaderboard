@@ -1,0 +1,79 @@
+button {
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  padding: 12px 24px;
+  border-radius: 16px;
+  border: none;
+  transition-duration: 0.4s;
+  box-shadow: 0 4px rgb(153, 153, 153);
+}
+
+button:active {
+  box-shadow: none;
+  transform: translateY(4px);
+}
+
+.create-button {
+  margin: 0 auto;
+  display: block;
+}
+
+.popup-form {
+  margin: auto;
+  margin-top: 16px;
+  width: 256px;
+  text-align: center;
+  border-radius: 16px;
+  padding: 12px 0 12px 0;
+}
+
+table, th, tr, td {
+  margin: auto;
+  margin-top: 16px;
+  font-size: 16px;
+  padding: 8px;
+  border: none;
+  border-collapse: collapse;
+}
+
+th:first-child, td:first-child{
+  border-radius:16px 0 0 16px;
+}
+
+th:last-child, td:last-child{
+  border-radius:0 16px 16px 0;
+}
+
+tr {
+  border-radius: 16px;
+}
+
+#info {
+  font-size: 16px;
+  background-color: yellow;
+  padding: 12px 24px;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px rgb(153, 153, 153);
+  margin: auto;
+  margin-top: 16px;
+  width: 256px;
+  text-align: center;
+}
+
+.create {
+  background-color: #49cc90;
+}
+
+.read {
+  background-color: #61affe;
+}
+
+.update {
+  background-color: #50e3c2;
+}
+
+.delete {
+  background-color: #f93e3e;
+}
