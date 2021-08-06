@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Creation Form: The for for adding new entries to the 
+ * leaderboard              
+ */
+
 import React from 'react';
 import './style.css';
 
@@ -18,15 +23,19 @@ class CreationForm extends React.Component {
   signalCreate(event) {
     event.preventDefault();
 
+    // If button clicked make form visibile (aka not hidden)
     if (this.state.isHidden) {
       this.setState({ isHidden: false });
       return;
     }
 
+    // Sends name and score to api for creation
     this.props.onCreate({ 
       name: this.state.name,
       score: this.state.score 
     });
+
+    //resets state for new entry to be added
     this.setState({
       name: '',
       score: '',
@@ -37,6 +46,7 @@ class CreationForm extends React.Component {
   handleChange(event){
     var name = event.target.name;
     var value = event.target.value;
+    // Makes sure that every input is alphanumeric for name
     var isAlphaNum = value.match("^[a-zA-Z0-9 ]*$") != null;
     if (isAlphaNum || name != "name") this.setState({ [name]: value })
   }
@@ -47,6 +57,7 @@ class CreationForm extends React.Component {
   }
 
   render(){
+    // Renders the create button when hidden and form when not hidden.
     if (this.state.isHidden) {
       return (
         <button className="create create-button" onClick={this.signalCreate}>

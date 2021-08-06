@@ -1,9 +1,19 @@
+/**
+ * @fileoverview Leaderboard is the main component of this application. It shows
+ * all entries, forms, and errors.
+ * @dependencies CreationForm: The button/form component that allows for the 
+ *    creation of entries.
+ * Entry: the basic unit of the leaderboard which represents the rows of the 
+ *    leaderboard itself
+ */
+
 import React from 'react';
 import Entry from './Entry'
 import CreationForm from './CreationForm';
 import './style.css';
 
-var baseUrl = 'http://localhost:9000/api/leaderboard';
+require('dotenv').config()
+var baseUrl = process.env.REACT_APP_SERVER_URL;
 
 class Leaderboard extends React.Component {
   constructor(props) {
@@ -20,18 +30,30 @@ class Leaderboard extends React.Component {
     };
   }
 
+  // Reads all entries from database on start
   componentDidMount() { this.handleRead() }
 
+  // Resets state of database and reads all entries
   handleRefresh() { 
-    this.setState({ entries: []}); 
+    this.setState({ entries: [], error: ""}); 
     this.handleRead(); 
   }
 
+  /**
+   * Formats error for user to see in window
+   * @param {string} error Response code state from bad api call
+   * @param {string} operation API call type which had error (CRUD)
+   */
   handleError(error, operation) {
     this.setState({ error: operation.concat(": ", error) });
-    this.handleRefresh();
+    this.handleRead();
   }
 
+  /**
+   * Checks API calls for bad response codes and throws error apropriately
+   * @param {HttpResponse} response Raw API response
+   * @returns An Error or a json from succesful api call
+   */
   handleResponse(response){
     if (!response.ok) {
       throw Error(response.statusText);
@@ -39,11 +61,15 @@ class Leaderboard extends React.Component {
     return response.json();
   }
 
+  /**
+   * Creates a new entry based off a name and score
+   * @param {Entry} entry Object holding a name and a score
+   */
   handleCreate(entry) {
     var data = {
       name: entry.name,
       score: entry.score,
-      date: new Date().toISOString().slice(0, 10)
+      date: new Date().toISOString().slice(0, 10) //Date based off today
     }
 
     fetch(baseUrl, {
@@ -58,10 +84,14 @@ class Leaderboard extends React.Component {
     if (this.state.errors.length > 0) this.handleRefresh();
   }
 
+  /**
+   * Reads from database the entries for the leaderboard
+   */
   handleRead() {
     fetch(baseUrl)
       .then(response => this.handleResponse(response))
       .then(entries => {
+        // Creates a list of new Entry Components
         let readEntries = entries.map(entry => {
           return (
             <Entry
@@ -83,6 +113,10 @@ class Leaderboard extends React.Component {
       .catch(error => this.handleError(error, "READ"))
   }
 
+  /**
+   * Updates a given entry based off a new name and/or a new date
+   * @param {Entry} entry Object holding a name and date
+   */
   handleUpdate(entry) {
     
     var url = baseUrl.concat(
@@ -100,6 +134,10 @@ class Leaderboard extends React.Component {
       .catch(error => this.handleError(error, "UPDATE"))
   }
 
+  /**
+   * Deletes a specific entry based off id.
+   * @param {Number} id Identification for the specific entry in database
+   */
   handleDelete(id) {
     var url = baseUrl.concat(`/${id}`);
     fetch(url, {
@@ -111,6 +149,10 @@ class Leaderboard extends React.Component {
       .catch(error => this.handleError(error, "DELETE"))
   }
 
+  /**
+   * Main render function for application
+   * @returns Creation form, Table of Entries, Refresh Button, and Error list
+   */
   render() {
     return (
       <div name="wrapper">
@@ -132,7 +174,7 @@ class Leaderboard extends React.Component {
         <button className="create-button" onClick={this.handleRefresh}>
           Refresh
         </button>
-        <p>{this.state.error}</p>
+        <p className="popup-form">{this.state.error}</p>
         
       </div>
     )

@@ -1,4 +1,9 @@
-import React, { useDebugValue } from 'react';
+/**
+ * @fileoverview Entry is the basic unit of the leaderboard and is represented 
+ * as a row on the leaderboard
+ */
+
+import React from 'react';
 import './style.css';
 
 class Entry extends React.Component {
@@ -20,23 +25,21 @@ class Entry extends React.Component {
   handleChange(event) {
     var name = event.target.name;
     var value = event.target.value;
+    // Makes sure inputed value is alpha numeric for name
     var isAlphaNum = value.match("^[a-zA-Z0-9 ]*$") != null;
     if (isAlphaNum || name != "name") this.setState({ [name]: value })
   }
 
   signalUpdate() {
-    //Toggle Edit state
+    // Toggle Edit state
     this.setState({
       isEditing: !this.state.isEditing
     })
 
-
-
+    // Sends update request to api
     if (this.state.isEditing) {
       this.props.onUpdate(this.state);
     }
-
-
   }
 
   signalDelete(event) {
@@ -49,6 +52,7 @@ class Entry extends React.Component {
   }
 
   render() {
+    // If editing allows user to change text for each property of the entry.
     if (this.state.isEditing) {
       return (
         <tr>
