@@ -2,6 +2,9 @@
 
 Leaderboard is a basic full-stack CRUD (Create Read Update Delete) application, which holds leaderboard entries in a MongoDB instance. The main inspiration behind this project was to learn javascript and basic frontend development. So I decided to use React as the main frontend library and Express as the main backend library. The majority of my time was spent [here](https://reactjs.org/docs/getting-started.html) combing through the basics of React development. 
 
+
+![leaderboard](https://user-images.githubusercontent.com/35976451/128581553-1b103b21-6492-4b5d-8d1d-a9b4b3ec2387.gif)
+
 ## Prerequisites
 
 * [Node.js](https://nodejs.org/en/)
@@ -38,6 +41,7 @@ cd server
 npm install
 npm start
 ```
+
 
 ## License
 [Apache 2.0](https://choosealicense.com/licenses/apache-2.0/)
